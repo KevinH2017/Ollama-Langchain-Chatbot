@@ -102,6 +102,7 @@ def main():
     with col2:
         st.title("PDF Chatbot")
 
+    # Fixes "ValueError: Could not connect to tenant default_tenant. Are you sure it exists?"
     chromadb.api.client.SharedSystemClient.clear_system_cache()
 
     # Upload PDF
@@ -136,27 +137,6 @@ def main():
                 st.error(f"An error occurred: {str(e)}")
     else:
         st.info("Please upload a file to get started.")
-    # if pdf is not None:
-    #     text = doc_loader(pdf)
-        
-    #     # Split into chunks
-    #     chunks = split_chunk_doc(text)
-
-    #     # Create ollama embeddeings
-    #     ollama.pull(EMBEDDING)
-    #     llm = ChatOllama(model=MODEL)
-    #     embeddings = OllamaEmbeddings(model=EMBEDDING)
-    #     knowledge_base = Chroma.from_texts(chunks, embeddings)
-    #     vector_db = create_vector_db()
-    #     retriever = ollama_retriever(vector_db, llm)
-        
-    #     # Take user input
-    #     user_input = st.text_input("Ask a question about your PDF:")
-    #     if user_input:
-    #         docs = knowledge_base.similarity_search(user_input)
-    #         chain = create_chain(retriever, llm)
-    #         response = chain.invoke(input=docs)
-    #         st.write(response)
 
 if __name__ == '__main__':
     main()
