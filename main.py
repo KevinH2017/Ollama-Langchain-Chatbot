@@ -1,14 +1,14 @@
 # Ollama PDF chatbot
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.retrievers.multi_query import MultiQueryRetriever
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langchain.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 import streamlit as st
 from PyPDF2 import PdfReader
-import ollama, logging
+import ollama, logging, chromadb
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -101,33 +101,62 @@ def main():
         st.image("image.png")
     with col2:
         st.title("PDF Chatbot")
-    
+
+    chromadb.api.client.SharedSystemClient.clear_system_cache()
+
     # Upload PDF
     pdf = st.file_uploader("Upload your PDF", type="pdf")
     
     # Gets text from file and splits it into chunks
     if pdf is not None:
-        text = doc_loader(pdf)
-        
-        # Split into chunks
-        chunks = split_chunk_doc(text)
+        with st.spinner("Generating response..."):
+            try:
+                text = doc_loader(pdf)
+                
+                # Split into chunks
+                chunks = split_chunk_doc(text)
 
-        # Create ollama embeddeings
-        ollama.pull(EMBEDDING)
-        llm = ChatOllama(model=MODEL)
-        embeddings = OllamaEmbeddings(model=EMBEDDING)
-        knowledge_base = Chroma.from_texts(chunks, embeddings)
-        vector_db = create_vector_db()
-        retriever = ollama_retriever(vector_db, llm)
+                # Create ollama embeddeings
+                ollama.pull(EMBEDDING)
+                llm = ChatOllama(model=MODEL)
+                embeddings = OllamaEmbeddings(model=EMBEDDING)
+                store = Chroma.from_texts(chunks, embeddings)
+                vector_db = create_vector_db()
+                retriever = ollama_retriever(vector_db, llm)
+                
+                # Take user input
+                user_input = st.text_input("Ask a question about your PDF:")
+                if user_input:
+                    docs = store.similarity_search(user_input)
+                    chain = create_chain(retriever, llm)
+                    response = chain.invoke(input=docs)
+                    st.write(response)
+
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+    else:
+        st.info("Please upload a file to get started.")
+    # if pdf is not None:
+    #     text = doc_loader(pdf)
         
-        # Take user input
-        user_question = st.text_input("Ask a question about your PDF:")
-        if user_question:
-            docs = knowledge_base.similarity_search(user_question)
-            chain = create_chain(retriever, llm)
-            response = chain.invoke(input=docs)
-            st.write(response)
-    
+    #     # Split into chunks
+    #     chunks = split_chunk_doc(text)
+
+    #     # Create ollama embeddeings
+    #     ollama.pull(EMBEDDING)
+    #     llm = ChatOllama(model=MODEL)
+    #     embeddings = OllamaEmbeddings(model=EMBEDDING)
+    #     knowledge_base = Chroma.from_texts(chunks, embeddings)
+    #     vector_db = create_vector_db()
+    #     retriever = ollama_retriever(vector_db, llm)
+        
+    #     # Take user input
+    #     user_input = st.text_input("Ask a question about your PDF:")
+    #     if user_input:
+    #         docs = knowledge_base.similarity_search(user_input)
+    #         chain = create_chain(retriever, llm)
+    #         response = chain.invoke(input=docs)
+    #         st.write(response)
 
 if __name__ == '__main__':
     main()
