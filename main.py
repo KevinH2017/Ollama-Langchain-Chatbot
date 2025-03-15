@@ -110,7 +110,7 @@ def main():
     
     # Gets text from file and splits it into chunks
     if pdf is not None:
-        with st.spinner("Generating response..."):
+        with st.spinner("Processing..."):
             try:
                 text = doc_loader(pdf)
                 
@@ -121,6 +121,8 @@ def main():
                 ollama.pull(EMBEDDING)
                 llm = ChatOllama(model=MODEL)
                 embeddings = OllamaEmbeddings(model=EMBEDDING)
+
+                # Create chroma db with chunks and embeddings
                 store = Chroma.from_texts(chunks, embeddings)
                 vector_db = create_vector_db()
                 retriever = ollama_retriever(vector_db, llm)
