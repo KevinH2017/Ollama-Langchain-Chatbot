@@ -1,4 +1,4 @@
-# Ollama PDF chatbot
+# Ollama PDF chatbot with Streamlit
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain_chroma import Chroma
