@@ -1,7 +1,7 @@
 # Ollama PDF chatbot
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.retrievers.multi_query import MultiQueryRetriever
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langchain.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
@@ -125,6 +125,7 @@ def main():
                 # Create chroma db with chunks and embeddings
                 store = Chroma.from_texts(chunks, embeddings)
                 vector_db = create_vector_db()
+                logging.info("Creating chain...")
                 retriever = ollama_retriever(vector_db, llm)
                 
                 # Take user input
@@ -132,6 +133,7 @@ def main():
                 if user_input:
                     docs = store.similarity_search(user_input)
                     chain = create_chain(retriever, llm)
+                    logging.info("Querying text...")
                     response = chain.invoke(input=docs)
                     st.write(response)
 
