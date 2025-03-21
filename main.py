@@ -18,15 +18,10 @@ EMBEDDING = "nomic-embed-text"
 PERSIST_DIRECTORY = "./chroma_db"
 VECTOR_STORE = "simple-rag"
 
-def create_vector_db():
+def create_vector_db(embeddings):
     """Creates and returns vector database with ollama model"""
-    # Pull the embedding model if not already available
-    ollama.pull(EMBEDDING)
-
-    embedding = OllamaEmbeddings(model=EMBEDDING)
-
     vector_db = Chroma(
-        embedding_function=embedding,
+        embedding_function=embeddings,
         collection_name=VECTOR_STORE,
         persist_directory=PERSIST_DIRECTORY,
     )
@@ -58,9 +53,7 @@ def create_chain(retriever, llm):
     {context}
     Question: {question}
     """
-
     prompt = ChatPromptTemplate.from_template(template)
-
     chain = (
         {
             "context": retriever,
@@ -124,7 +117,7 @@ def main():
 
                 # Create chroma db with chunks and embeddings
                 store = Chroma.from_texts(chunks, embeddings)
-                vector_db = create_vector_db()
+                vector_db = create_vector_db(embeddings)
                 logging.info("Creating chain...")
                 retriever = ollama_retriever(vector_db, llm)
                 
