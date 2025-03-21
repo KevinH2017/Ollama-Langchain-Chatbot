@@ -117,7 +117,7 @@ def main():
                 # Split into chunks
                 chunks = split_chunk_doc(text)
 
-                # Create ollama embeddeings
+                # Create ollama embeddings
                 ollama.pull(EMBEDDING)
                 llm = ChatOllama(model=MODEL)
                 embeddings = OllamaEmbeddings(model=EMBEDDING)
