@@ -67,7 +67,7 @@ def conversation_chain(vector_db):
 
 
 def handle_input(user_question):
-    """Takes"""
+    """Takes chats and stores them into chat_history"""
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
     for i, message in enumerate(st.session_state.chat_history):
