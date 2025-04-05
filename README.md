@@ -1,2 +1,2 @@
 # Ollama-Langchain-Chatbot
- PDF Chatbot using ollama with langchain
+AI Chatbots using ollama with langchain and streamlit for user interface.
