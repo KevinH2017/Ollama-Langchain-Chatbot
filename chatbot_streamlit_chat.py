@@ -1,4 +1,4 @@
-# AI Chatbot using ollama that shows chat history with streamlit_chat module
+# Chatbot using ollama that shows chat history with streamlit_chat module
 from langchain_ollama import ChatOllama
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
 import streamlit as st

@@ -1,4 +1,4 @@
-# AI Chatbot using ollama
+# Chatbot using ollama
 from langchain_ollama import ChatOllama
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
 import streamlit as st
