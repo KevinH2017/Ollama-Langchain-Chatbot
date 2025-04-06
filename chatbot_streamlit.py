@@ -29,7 +29,7 @@ def main():
         st.session_state.messages = [SystemMessage(content="Hello! How can I help you today?")]
 
     # Ollama llm setup
-    llm = ChatOllama(model=MODEL, temperature=0)
+    llm = ChatOllama(model=MODEL)
 
     chatbot_message = st.chat_message("assistant")
     chatbot_message.write("Hello user!")

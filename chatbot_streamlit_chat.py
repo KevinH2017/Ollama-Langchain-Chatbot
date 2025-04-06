@@ -14,23 +14,12 @@ def main():
     st.set_page_config(page_title="My Chatbot", page_icon="🤖")
     st.header("My Chatbot 🤖")
 
-    # Aligns user text and icon to right of screen
-    st.markdown("""
-        <style>
-            .st-emotion-cache-4oy321 {
-                flex-direction: row-reverse;
-                text-align: right;
-            }
-        </style>
-    """,
-    unsafe_allow_html=True)
-
     # Checks if previous "messages" are in session_state, otherwise "messages" are remembered for the current conversation
     if "messages" not in st.session_state:    
         st.session_state.messages = [SystemMessage(content="Hello! How can I help you today?")]
 
     # Ollama llm setup
-    llm = ChatOllama(model=MODEL, temperature=0)
+    llm = ChatOllama(model=MODEL)
     
     # Take user input
     user_input = st.chat_input("Talk to the chatbot")
@@ -49,6 +38,7 @@ def main():
     # Sets "messages" in session_state to empty list
     messages = st.session_state.get("messages", [])
 
+    # Keeps previous messages for chat history
     for i, msg in enumerate(messages):
         if i % 2 == 0:
             message(msg.content, is_user=False, key=str(i) + "_ai")
